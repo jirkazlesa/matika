@@ -145,7 +145,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>⚔️ Math Battle ⚔️</h1>
+    <h1>⚔️ Math
 
     <div class="top-bar">
       <div>⭐ Body: <span id="points">0</span></div>
@@ -195,7 +195,7 @@
     let points = 0;
     let playerHealth = 100;
     let enemyHealth = 100;
-    let maxNumber = 10;
+    let maxNumber = 20;
 
     let timeLeft = 60;
 
@@ -208,3 +208,98 @@
         endGame();
       }
     }, 1000);
+
+    function setDifficulty(level) {
+      if(level === 'easy') maxNumber = 20;
+      if(level === 'medium') maxNumber = 80;
+      if(level === 'hard') maxNumber = 200;
+
+      generateQuestion();
+    }
+
+    function generateQuestion() {
+      num1 = Math.floor(Math.random() * maxNumber) + 1;
+      num2 = Math.floor(Math.random() * maxNumber) + 1;
+
+      const operations = ['+', '-', '*', '/'];
+      operation = operations[Math.floor(Math.random() * operations.length)];
+
+      if(operation === '+') correct = num1 + num2;
+      if(operation === '-') correct = num1 - num2;
+      if(operation === '*') correct = num1 * num2;
+
+      if(operation === '/') {
+        correct = num1;
+        num2 = Math.floor(Math.random() * 12) + 1;
+        num1 = correct * num2;
+        correct = num1 / num2;
+      }
+
+      document.getElementById('question').innerText = `${num1} ${operation} ${num2}`;
+
+      if(Math.random() < 0.25) {
+        const x = Math.floor(Math.random() * 15) + 1;
+        const result = x * 3 + 7;
+        correct = x;
+        document.getElementById('question').innerText = `x • 3 + 7 = ${result}`;
+      }
+
+      if(Math.random() < 0.15) {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 20) + 1;
+        correct = a + b;
+        document.getElementById('question').innerText = `(a + ${b}) pro a = ${a}`;
+      };
+      document.getElementById('answer').value = '';
+    }
+
+    function checkAnswer() {
+      const answer = Number(document.getElementById('answer').value);
+      const message = document.getElementById('message');
+
+      if(answer === correct) {
+        enemyHealth -= 10;
+        points += 5;
+        message.innerText = '🔥 Kritický zásah!';
+      } else {
+        playerHealth -= 10;
+        message.innerText = `❌ Špatně! Bylo to ${correct}`;
+      }
+
+      if(enemyHealth < 0) enemyHealth = 0;
+      if(playerHealth < 0) playerHealth = 0;
+
+      updateBars();
+
+      document.getElementById('points').innerText = points;
+
+      if(enemyHealth <= 0) {
+        message.innerText = '🏆 Vyhrál jsi!';
+        enemyHealth = 100;
+      }
+
+      if(playerHealth <= 0) {
+        message.innerText = '💀 Prohrál jsi!';
+        playerHealth = 100;
+      }
+
+      setTimeout(generateQuestion, 700);
+    }
+
+    function updateBars() {
+      document.getElementById('playerHP').style.width = playerHealth + '%';
+      document.getElementById('enemyHP').style.width = enemyHealth + '%';
+    }
+
+    function endGame() {
+      document.querySelector('.question-box').innerHTML = `
+        <h2>⏰ Konec hry!</h2>
+        <p>Tvoje skóre: ${points}</p>
+        <button onclick="location.reload()">Hrát znovu</button>
+      `;
+    }
+
+    generateQuestion();
+  </script>
+</body>
+</html>

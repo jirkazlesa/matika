@@ -3,181 +3,273 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Radioaktivní sklep</title>
+<title>Projekt R-13 - Únikovka</title>
 
 <style>
 body{
-    font-family: Arial, sans-serif;
-    background:#111;
-    color:white;
-    text-align:center;
-    margin:0;
+margin:0;
+font-family:Arial;
+background:#0b0f14;
+color:white;
+transition:0.2s;
 }
 
-.room{
-    display:none;
-    padding:30px;
-}
-
-.active{
-    display:block;
-}
-
-button{
-    padding:10px 20px;
-    margin-top:15px;
-    cursor:pointer;
-}
-
-input{
-    padding:8px;
-    font-size:16px;
-}
-
-h1{
-    color:#66ff66;
+header{
+background:#111826;
+padding:15px;
+text-align:center;
+border-bottom:2px solid #00ff99;
 }
 
 .timer{
-    position:fixed;
-    top:10px;
-    right:20px;
-    font-size:24px;
-    color:red;
+position:fixed;
+top:10px;
+right:10px;
+font-size:22px;
+color:#00ff99;
+}
+
+.room{
+display:none;
+padding:25px;
+max-width:900px;
+margin:auto;
+}
+
+.active{display:block;}
+
+.card{
+background:#151c27;
+padding:20px;
+border-radius:10px;
+margin-top:15px;
+}
+
+button{
+padding:10px;
+margin-top:10px;
+cursor:pointer;
+background:#00ff99;
+border:none;
+}
+
+input{
+padding:8px;
+margin-top:10px;
+}
+
+.inv{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#0f1622;
+padding:10px;
+border-top:2px solid #00ff99;
+}
+
+.flicker{
+animation:flick 0.15s infinite;
+}
+
+@keyframes flick{
+0%{opacity:1}
+50%{opacity:0.8}
+100%{opacity:1}
+}
+
+.doc{
+background:#1c2635;
+padding:10px;
+margin:5px;
+cursor:pointer;
+}
+
+.doc:hover{background:#24324a;}
+
+.hint{
+color:#aaa;
+font-size:14px;
 }
 </style>
 </head>
+
 <body>
+
+<header>
+<h1>☢️ PROJEKT R-13</h1>
+<p>Najdi kód a uteč z bunkru</p>
+</header>
 
 <div class="timer" id="timer">30:00</div>
 
-<div id="room1" class="room active">
-<h1>☢️ Radioaktivní sklep</h1>
-<p>Probudil ses v tajné laboratoři. Najdi kód k otevření dveří.</p>
+<!-- ROOM 1 -->
+<div class="room active" id="r1">
+<div class="card">
+<h2>Bezpečnostní kancelář</h2>
 
-<p>
-Mám klíče, ale žádné zámky.<br>
-Mám prostor, ale žádnou místnost.<br>
-Můžeš vstoupit, ale ne odejít.<br>
-Co jsem?
-</p>
+<p>Najdi přístupovou kartu.</p>
 
-<input id="answer1">
-<button onclick="check1()">Potvrdit</button>
+<button onclick="take('KARTA')">Vzít kartu</button>
+
+<p id="msg1"></p>
+
+<button onclick="next('r1','r2')">Dveře (vyžaduje kartu)</button>
+
+</div>
 </div>
 
-<div id="room2" class="room">
-<h1>Sklad odpadu</h1>
+<!-- ROOM 2 -->
+<div class="room" id="r2">
+<div class="card">
+<h2>Archiv</h2>
 
-<p>
-Na stole jsou 3 čísla:
-<br><br>
-2 - 6 - 12 - 20 - ?
-<br><br>
-Jaké číslo pokračuje?
-</p>
+<p>Vyber správný dokument.</p>
 
-<input id="answer2">
-<button onclick="check2()">Potvrdit</button>
+<div class="doc" onclick="doc(false)">Záznam A-12 (chybný)</div>
+<div class="doc" onclick="doc(false)">Záznam B-44 (chybný)</div>
+<div class="doc" onclick="doc(true)">Záznam R-7 (tajný kód: 02)</div>
+<div class="doc" onclick="doc(false)">Záznam C-91 (chybný)</div>
+
+<p id="msg2"></p>
+</div>
 </div>
 
-<div id="room3" class="room">
-<h1>Laboratoř</h1>
+<!-- ROOM 3 -->
+<div class="room" id="r3">
+<div class="card">
+<h2>Laboratoř</h2>
 
-<p>
-V místnosti jsou tři spínače.
-Pouze jeden zapíná světlo v sousední místnosti.
-Jak zjistíš který?
-</p>
+<p>UV svítilna odhalila nápis:</p>
 
-<p>Napiš číslo správné možnosti:</p>
+<p><b>SKRYTÝ KÓD: 57</b></p>
 
-<p>
-1 = Náhodně vyberu spínač.<br>
-2 = Jeden zapnu, počkám, vypnu a druhý zapnu.<br>
-3 = Zapnu všechny.
-</p>
+<button onclick="take('UV')">Vzít UV svítilnu</button>
 
-<input id="answer3">
-<button onclick="check3()">Potvrdit</button>
+<button onclick="next('r3','r4')">Pokračovat</button>
+</div>
 </div>
 
-<div id="room4" class="room">
-<h1>Reaktor</h1>
+<!-- ROOM 4 -->
+<div class="room" id="r4">
+<div class="card">
+<h2>Serverovna</h2>
 
-<p>
-Kód je ukryt v pořadí písmen:
-<br><br>
-A = 1<br>
-B = 2<br>
-C = 3<br>
-...
-<br><br>
-Jaké číslo má písmeno J?
-</p>
+<p>Najdi pořadí přístupu.</p>
 
-<input id="answer4">
-<button onclick="check4()">Potvrdit</button>
+<p>Správné pořadí je založeno na inventáři.</p>
+
+<button onclick="solve4()">Spojit data</button>
+
+<p id="msg4"></p>
+</div>
 </div>
 
-<div id="room5" class="room">
-<h1>Nouzový východ</h1>
+<!-- ROOM 5 -->
+<div class="room" id="r5">
+<div class="card">
+<h2>Reaktor</h2>
 
-<p>
-Poslední zámek:
-<br><br>
-Všichni mě mají,
-nikdo mě nemůže ztratit.
-Co je to?
-</p>
+<p>Zadej finální kód</p>
 
-<input id="answer5">
-<button onclick="check5()">Potvrdit</button>
+<input id="code">
+<button onclick="final()">Otevřít</button>
+
+<p id="msg5"></p>
+</div>
 </div>
 
-<div id="win" class="room">
-<h1>🎉 ÚNIK DOKONČEN</h1>
-<p>Úspěšně jsi deaktivoval reaktor a utekl ze sklepa.</p>
+<!-- WIN -->
+<div class="room" id="win">
+<div class="card">
+<h1 style="color:#00ff99">ÚNIK ÚSPĚŠNÝ</h1>
+</div>
+</div>
+
+<!-- INVENTÁŘ -->
+<div class="inv">
+🎒 Inventář:
+<span id="inv"></span>
+<br>
+<button onclick="hint()">💡 Nápověda</button>
+<span id="hint" class="hint"></span>
 </div>
 
 <script>
 
-function next(current,next){
-document.getElementById(current).classList.remove("active");
-document.getElementById(next).classList.add("active");
+let inv=[];
+let hints=3;
+
+function update(){
+document.getElementById("inv").innerText=inv.join(", ");
 }
 
-function check1(){
-let a=document.getElementById("answer1").value.toLowerCase();
-if(a.includes("klávesnice")) next("room1","room2");
-else alert("Špatně.");
+function take(item){
+if(!inv.includes(item)){
+inv.push(item);
+update();
+}
 }
 
-function check2(){
-if(document.getElementById("answer2").value=="30")
-next("room2","room3");
-else alert("Špatně.");
+function next(a,b){
+if(inv.includes("KARTA")){
+document.getElementById(a).classList.remove("active");
+document.getElementById(b).classList.add("active");
+}
+else alert("Chybí karta");
 }
 
-function check3(){
-if(document.getElementById("answer3").value=="2")
-next("room3","room4");
-else alert("Špatně.");
+function doc(correct){
+if(correct){
+document.getElementById("msg2").innerText="✔ Správně: +02";
+inv.push("02");
+update();
+}
+else{
+document.getElementById("msg2").innerText="❌ Špatně";
+}
 }
 
-function check4(){
-if(document.getElementById("answer4").value=="10")
-next("room4","room5");
-else alert("Špatně.");
+function solve4(){
+if(inv.includes("02") && inv.includes("UV")){
+document.getElementById("msg4").innerText="✔ Kód: 18";
+inv.push("18");
+update();
+}
+else{
+document.getElementById("msg4").innerText="Chybí data";
+}
 }
 
-function check5(){
-let a=document.getElementById("answer5").value.toLowerCase();
-if(a.includes("jméno"))
-next("room5","win");
-else alert("Špatně.");
+function final(){
+let v=document.getElementById("code").value;
+
+if(v==="02571818"){
+document.getElementById("r5").classList.remove("active");
+document.getElementById("win").classList.add("active");
+}
+else{
+document.getElementById("msg5").innerText="Špatně";
+}
 }
 
+function hint(){
+if(hints<=0){
+document.getElementById("hint").innerText="Žádné nápovědy";
+return;
+}
+hints--;
+
+let tips=[
+"Najdi kartu v první místnosti",
+"Správný dokument je R-7",
+"UV svítilna je klíč k laboratoři"
+];
+
+document.getElementById("hint").innerText=tips[Math.floor(Math.random()*tips.length)];
+}
+
+// TIMER
 let time=1800;
 
 setInterval(()=>{
@@ -186,15 +278,34 @@ time--;
 let m=Math.floor(time/60);
 let s=time%60;
 
-document.getElementById("timer").innerHTML=
-String(m).padStart(2,"0")+":"+
-String(s).padStart(2,"0");
+document.getElementById("timer").innerText=
+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+
+if(time===120){
+document.body.classList.add("flicker");
+alarm();
+}
 
 if(time<=0){
-alert("☢️ Radiace tě dostihla!");
-location.reload();
+document.body.innerHTML="<h1 style='color:red;text-align:center;margin-top:100px'>☢️ KONEC - RADIACE</h1>";
 }
 },1000);
+
+// SOUND
+function alarm(){
+let ctx=new (window.AudioContext||window.webkitAudioContext)();
+let osc=ctx.createOscillator();
+osc.type="square";
+osc.frequency.value=600;
+osc.connect(ctx.destination);
+osc.start();
+
+setInterval(()=>{
+osc.frequency.value=400+Math.random()*400;
+},300);
+}
+
+update();
 
 </script>
 

@@ -2,169 +2,73 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<title>Matematická válka</title>
-
+<title>Pravda / Nepravda</title>
 <style>
-body{
-margin:0;
-font-family:Arial;
-color:white;
-text-align:center;
-
-/* 🌍 OBRAZEK Z INTERNETU */
-background-image:url("https://images.unsplash.com/photo-1604079628040-94301bb21b91");
-background-size:cover;
-background-position:center;
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #f0f0f0;
 }
-
-.overlay{
-background:rgba(0,0,0,0.75);
-min-height:100vh;
-padding:20px;
+.card {
+    background: white;
+    padding: 20px;
+    margin: 50px auto;
+    width: 300px;
+    border-radius: 15px;
+    box-shadow: 0 0 10px gray;
 }
-
-h1{color:#00ff99}
-
-.card{
-background:rgba(20,25,35,0.9);
-padding:20px;
-margin:20px auto;
-max-width:500px;
-border-radius:10px;
-}
-
-input,button{
-padding:10px;
-margin:5px;
-font-size:16px;
-}
-
-button{
-cursor:pointer;
-background:#00ff99;
-border:none;
-}
-
-.stats{
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-.bar{
-width:300px;
-height:20px;
-background:#333;
-margin:10px auto;
-border-radius:10px;
-overflow:hidden;
-}
-
-.fill{
-height:100%;
-background:red;
-width:100%;
-transition:0.2s;
-}
-
-/* 👹 BOSS OBRAZEK */
-.boss{
-width:200px;
-border-radius:10px;
-margin-top:10px;
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
 }
 </style>
 </head>
-
 <body>
 
-<div class="overlay">
-
-<h1>⚔️ MATEMATICKÁ VÁLKA</h1>
+<h1>🎯 Pravda / Nepravda</h1>
 
 <div class="card">
-<h2>Trénink</h2>
-
-<div id="task"></div>
-
-<input id="ans">
-<button onclick="check()">Odpovědět</button>
-
-<p id="msg"></p>
-
-<div class="stats">
-<div>💥 Síla: <span id="power">0</span></div>
-<div>🔫 Munice: <span id="ammo">0</span></div>
-</div>
-</div>
-
-<div class="card" id="bossCard" style="display:none">
-<h2>👹 BOS</h2>
-
-<img class="boss"
-src="https://images.unsplash.com/photo-1549924231-f129b911e442">
-
-<div class="bar">
-<div class="fill" id="bossHP"></div>
-</div>
-
-</div>
-
+    <h2 id="question">Načítám...</h2>
+    <button onclick="answer(true)">Pravda</button>
+    <button onclick="answer(false)">Nepravda</button>
+    <p id="score">Skóre: 0</p>
 </div>
 
 <script>
+let score = 0;
 
-let a,b,correct;
-let power=0;
-let ammo=0;
-let bossHP=100;
+let questions = [
+    {q: "Praha je hlavní město ČR", a: true},
+    {q: "Slunce je planeta", a: false},
+    {q: "9 × 9 = 81", a: true},
+    {q: "V ČR je moře", a: false},
+    {q: "H₂O je voda", a: true}
+];
 
-function newTask(){
-a=Math.floor(Math.random()*10+1);
-b=Math.floor(Math.random()*10+1);
-correct=a+b;
+let current = 0;
 
-document.getElementById("task").innerText=
-`Spočítej: ${a} + ${b}`;
+function showQuestion(){
+    if(current >= questions.length){
+        document.getElementById("question").innerText = "Konec hry 🎉";
+        return;
+    }
+    document.getElementById("question").innerText = questions[current].q;
 }
 
-function check(){
-let v=Number(document.getElementById("ans").value);
+function answer(userAnswer){
+    if(current >= questions.length) return;
 
-if(v===correct){
-power+=5;
-ammo+=2;
-bossHP-=5;
+    if(userAnswer === questions[current].a){
+        score++;
+    }
 
-document.getElementById("msg").innerText="✔ zásah!";
-updateBoss();
-}else{
-document.getElementById("msg").innerText="❌ vedle";
+    current++;
+    document.getElementById("score").innerText = "Skóre: " + score;
+    showQuestion();
 }
 
-document.getElementById("power").innerText=power;
-document.getElementById("ammo").innerText=ammo;
-
-document.getElementById("ans").value="";
-
-newTask();
-
-if(power>=10){
-document.getElementById("bossCard").style.display="block";
-}
-}
-
-function updateBoss(){
-document.getElementById("bossHP").style.width=bossHP+"%";
-
-if(bossHP<=0){
-alert("👑 BOS PORAŽEN!");
-location.reload();
-}
-}
-
-newTask();
-
+showQuestion();
 </script>
 
 </body>

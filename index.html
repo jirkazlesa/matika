@@ -3,321 +3,198 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Math Adventure</title>
+<title>Radioaktivní sklep</title>
 
 <style>
 body{
-    margin:0;
-    overflow:hidden;
-    font-family:Arial;
-    background:#111827;
+    font-family: Arial, sans-serif;
+    background:#111;
     color:white;
-}
-
-canvas{
-    display:block;
-    margin:auto;
-    background:#1e293b;
-}
-
-#ui{
-    position:absolute;
-    top:10px;
-    left:10px;
-    font-size:22px;
-}
-
-#questionBox{
-    position:absolute;
-    top:10px;
-    right:10px;
-    background:rgba(0,0,0,0.6);
-    padding:15px;
-    border-radius:15px;
     text-align:center;
+    margin:0;
 }
 
-.answerBtn{
-    margin-top:10px;
+.room{
+    display:none;
+    padding:30px;
+}
+
+.active{
     display:block;
-    width:180px;
-    padding:10px;
-    border:none;
-    border-radius:10px;
-    font-size:20px;
+}
+
+button{
+    padding:10px 20px;
+    margin-top:15px;
     cursor:pointer;
-    background:#2563eb;
-    color:white;
 }
 
-.answerBtn:hover{
-    transform:scale(1.05);
+input{
+    padding:8px;
+    font-size:16px;
 }
 
-#startScreen{
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:#0f172a;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
+h1{
+    color:#66ff66;
 }
 
-#startScreen button{
-    padding:15px 30px;
+.timer{
+    position:fixed;
+    top:10px;
+    right:20px;
     font-size:24px;
-    border:none;
-    border-radius:15px;
-    cursor:pointer;
+    color:red;
 }
 </style>
 </head>
-
 <body>
 
-<div id="startScreen">
-    <h1>⚔️ Math Adventure ⚔️</h1>
-    <p>Skákej přes překážky a počítej příklady.</p>
-    <button onclick="startGame()">HRÁT</button>
+<div class="timer" id="timer">30:00</div>
+
+<div id="room1" class="room active">
+<h1>☢️ Radioaktivní sklep</h1>
+<p>Probudil ses v tajné laboratoři. Najdi kód k otevření dveří.</p>
+
+<p>
+Mám klíče, ale žádné zámky.<br>
+Mám prostor, ale žádnou místnost.<br>
+Můžeš vstoupit, ale ne odejít.<br>
+Co jsem?
+</p>
+
+<input id="answer1">
+<button onclick="check1()">Potvrdit</button>
 </div>
 
-<div id="ui">
-⭐ Score: <span id="score">0</span><br>
-❤️ Lives: <span id="lives">5</span><br>
-🏆 Level: <span id="level">1</span>
+<div id="room2" class="room">
+<h1>Sklad odpadu</h1>
+
+<p>
+Na stole jsou 3 čísla:
+<br><br>
+2 - 6 - 12 - 20 - ?
+<br><br>
+Jaké číslo pokračuje?
+</p>
+
+<input id="answer2">
+<button onclick="check2()">Potvrdit</button>
 </div>
 
-<div id="questionBox">
-<div id="question">5 + 5</div>
+<div id="room3" class="room">
+<h1>Laboratoř</h1>
 
-<button class="answerBtn" id="a0"></button>
-<button class="answerBtn" id="a1"></button>
-<button class="answerBtn" id="a2"></button>
+<p>
+V místnosti jsou tři spínače.
+Pouze jeden zapíná světlo v sousední místnosti.
+Jak zjistíš který?
+</p>
+
+<p>Napiš číslo správné možnosti:</p>
+
+<p>
+1 = Náhodně vyberu spínač.<br>
+2 = Jeden zapnu, počkám, vypnu a druhý zapnu.<br>
+3 = Zapnu všechny.
+</p>
+
+<input id="answer3">
+<button onclick="check3()">Potvrdit</button>
 </div>
 
-<canvas id="game" width="1200" height="600"></canvas>
+<div id="room4" class="room">
+<h1>Reaktor</h1>
+
+<p>
+Kód je ukryt v pořadí písmen:
+<br><br>
+A = 1<br>
+B = 2<br>
+C = 3<br>
+...
+<br><br>
+Jaké číslo má písmeno J?
+</p>
+
+<input id="answer4">
+<button onclick="check4()">Potvrdit</button>
+</div>
+
+<div id="room5" class="room">
+<h1>Nouzový východ</h1>
+
+<p>
+Poslední zámek:
+<br><br>
+Všichni mě mají,
+nikdo mě nemůže ztratit.
+Co je to?
+</p>
+
+<input id="answer5">
+<button onclick="check5()">Potvrdit</button>
+</div>
+
+<div id="win" class="room">
+<h1>🎉 ÚNIK DOKONČEN</h1>
+<p>Úspěšně jsi deaktivoval reaktor a utekl ze sklepa.</p>
+</div>
 
 <script>
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-let gameStarted = false;
-
-let score = 0;
-let lives = 5;
-let level = 1;
-
-const player = {
-    x:100,
-    y:450,
-    width:50,
-    height:50,
-    color:"cyan",
-    velocityY:0,
-    jumping:false
-};
-
-let gravity = 0.8;
-
-let obstacles = [];
-
-function startGame(){
-    document.getElementById("startScreen").style.display = "none";
-    gameStarted = true;
-    generateQuestion();
-    update();
+function next(current,next){
+document.getElementById(current).classList.remove("active");
+document.getElementById(next).classList.add("active");
 }
 
-function createObstacle(){
-    obstacles.push({
-        x:canvas.width,
-        y:470,
-        width:40,
-        height:80,
-        speed:6 + level
-    });
+function check1(){
+let a=document.getElementById("answer1").value.toLowerCase();
+if(a.includes("klávesnice")) next("room1","room2");
+else alert("Špatně.");
 }
+
+function check2(){
+if(document.getElementById("answer2").value=="30")
+next("room2","room3");
+else alert("Špatně.");
+}
+
+function check3(){
+if(document.getElementById("answer3").value=="2")
+next("room3","room4");
+else alert("Špatně.");
+}
+
+function check4(){
+if(document.getElementById("answer4").value=="10")
+next("room4","room5");
+else alert("Špatně.");
+}
+
+function check5(){
+let a=document.getElementById("answer5").value.toLowerCase();
+if(a.includes("jméno"))
+next("room5","win");
+else alert("Špatně.");
+}
+
+let time=1800;
 
 setInterval(()=>{
-    if(gameStarted){
-        createObstacle();
-    }
-},1800);
+time--;
 
-function drawPlayer(){
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+let m=Math.floor(time/60);
+let s=time%60;
+
+document.getElementById("timer").innerHTML=
+String(m).padStart(2,"0")+":"+
+String(s).padStart(2,"0");
+
+if(time<=0){
+alert("☢️ Radiace tě dostihla!");
+location.reload();
 }
-
-function drawGround(){
-    ctx.fillStyle = "#22c55e";
-    ctx.fillRect(0,520,canvas.width,80);
-}
-
-function drawObstacles(){
-
-    ctx.fillStyle = "red";
-
-    for(let i=0;i<obstacles.length;i++){
-
-        let o = obstacles[i];
-
-        ctx.fillRect(o.x,o.y,o.width,o.height);
-
-        o.x -= o.speed;
-
-        if(
-            player.x < o.x + o.width &&
-            player.x + player.width > o.x &&
-            player.y < o.y + o.height &&
-            player.y + player.height > o.y
-        ){
-
-            obstacles.splice(i,1);
-
-            damagePlayer();
-        }
-
-        if(o.x + o.width < 0){
-            obstacles.splice(i,1);
-            score += 2;
-            updateUI();
-        }
-    }
-}
-
-function damagePlayer(){
-
-    lives--;
-
-    player.color = "orange";
-
-    setTimeout(()=>{
-        player.color = "cyan";
-    },300);
-
-    updateUI();
-
-    if(lives <= 0){
-        gameOver();
-    }
-}
-
-function update(){
-
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    drawGround();
-
-    player.velocityY += gravity;
-    player.y += player.velocityY;
-
-    if(player.y > 450){
-        player.y = 450;
-        player.velocityY = 0;
-        player.jumping = false;
-    }
-
-    drawPlayer();
-    drawObstacles();
-
-    requestAnimationFrame(update);
-}
-
-window.addEventListener("keydown",(e)=>{
-
-    if(e.code === "Space" && !player.jumping){
-
-        player.velocityY = -16;
-        player.jumping = true;
-    }
-});
-
-let correctAnswer = 0;
-
-function generateQuestion(){
-
-    let a = Math.floor(Math.random()*20)+1;
-    let b = Math.floor(Math.random()*20)+1;
-
-    let ops = ["+","-","*"];
-
-    let op = ops[Math.floor(Math.random()*ops.length)];
-
-    let result;
-
-    if(op === "+") result = a+b;
-    if(op === "-") result = a-b;
-    if(op === "*") result = a*b;
-
-    document.getElementById("question").innerText =
-        `${a} ${op} ${b} = ?`;
-
-    correctAnswer = Math.floor(Math.random()*3);
-
-    for(let i=0;i<3;i++){
-
-        let value;
-
-        if(i === correctAnswer){
-            value = result;
-        }else{
-            value = result + Math.floor(Math.random()*20)-10;
-        }
-
-        const btn = document.getElementById("a"+i);
-
-        btn.innerText = value;
-
-        btn.onclick = ()=> chooseAnswer(i);
-    }
-}
-
-function chooseAnswer(index){
-
-    if(index === correctAnswer){
-
-        score += 10;
-
-        player.color = "lime";
-
-        setTimeout(()=>{
-            player.color = "cyan";
-        },300);
-
-    }else{
-
-        damagePlayer();
-    }
-
-    if(score > level * 100){
-
-        level++;
-
-        updateUI();
-    }
-
-    generateQuestion();
-
-    updateUI();
-}
-
-function updateUI(){
-
-    document.getElementById("score").innerText = score;
-    document.getElementById("lives").innerText = lives;
-    document.getElementById("level").innerText = level;
-}
-
-function gameOver(){
-
-    alert("Konec hry! Score: " + score);
-
-    location.reload();
-}
+},1000);
 
 </script>
 

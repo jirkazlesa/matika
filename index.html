@@ -6,17 +6,27 @@
 
 <style>
 body{
+margin:0;
 font-family:Arial;
-background:#0b0f14;
 color:white;
 text-align:center;
-margin:0;
+
+/* 🌍 OBRAZEK Z INTERNETU */
+background-image:url("https://images.unsplash.com/photo-1604079628040-94301bb21b91");
+background-size:cover;
+background-position:center;
+}
+
+.overlay{
+background:rgba(0,0,0,0.75);
+min-height:100vh;
+padding:20px;
 }
 
 h1{color:#00ff99}
 
 .card{
-background:#151c27;
+background:rgba(20,25,35,0.9);
 padding:20px;
 margin:20px auto;
 max-width:500px;
@@ -39,7 +49,6 @@ border:none;
 display:flex;
 justify-content:center;
 gap:20px;
-margin-top:10px;
 }
 
 .bar{
@@ -57,10 +66,19 @@ background:red;
 width:100%;
 transition:0.2s;
 }
+
+/* 👹 BOSS OBRAZEK */
+.boss{
+width:200px;
+border-radius:10px;
+margin-top:10px;
+}
 </style>
 </head>
 
 <body>
+
+<div class="overlay">
 
 <h1>⚔️ MATEMATICKÁ VÁLKA</h1>
 
@@ -81,13 +99,17 @@ transition:0.2s;
 </div>
 
 <div class="card" id="bossCard" style="display:none">
-<h2>👹 BOS: HLAVNÍ PROGRAM</h2>
+<h2>👹 BOS</h2>
+
+<img class="boss"
+src="https://images.unsplash.com/photo-1549924231-f129b911e442">
 
 <div class="bar">
 <div class="fill" id="bossHP"></div>
 </div>
 
-<p>Útoč pomocí správných odpovědí!</p>
+</div>
+
 </div>
 
 <script>
@@ -95,7 +117,6 @@ transition:0.2s;
 let a,b,correct;
 let power=0;
 let ammo=0;
-
 let bossHP=100;
 
 function newTask(){
@@ -113,31 +134,24 @@ let v=Number(document.getElementById("ans").value);
 if(v===correct){
 power+=5;
 ammo+=2;
-
-document.getElementById("msg").innerText="✔ Správně! +síla +munice";
-
-if(bossHP<100){
 bossHP-=5;
-updateBoss();
-}
 
+document.getElementById("msg").innerText="✔ zásah!";
+updateBoss();
 }else{
-document.getElementById("msg").innerText="❌ Špatně";
+document.getElementById("msg").innerText="❌ vedle";
 }
 
 document.getElementById("power").innerText=power;
 document.getElementById("ammo").innerText=ammo;
 
 document.getElementById("ans").value="";
+
 newTask();
 
-if(power>=20){
-startBoss();
-}
-}
-
-function startBoss(){
+if(power>=10){
 document.getElementById("bossCard").style.display="block";
+}
 }
 
 function updateBoss(){
@@ -148,16 +162,6 @@ alert("👑 BOS PORAŽEN!");
 location.reload();
 }
 }
-
-// bonus: automatický útok
-setInterval(()=>{
-if(bossHP<100 && ammo>0){
-bossHP-=2;
-ammo--;
-document.getElementById("ammo").innerText=ammo;
-updateBoss();
-}
-},2000);
 
 newTask();
 
